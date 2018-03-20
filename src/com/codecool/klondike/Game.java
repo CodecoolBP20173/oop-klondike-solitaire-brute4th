@@ -2,9 +2,12 @@ package com.codecool.klondike;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
@@ -96,6 +99,8 @@ public class Game extends Pane {
         deck = Card.createNewDeck();
         initPiles();
         dealCards();
+        setRestartButton();
+        getChildren().add(setRestartButton());
     }
 
     public void addMouseEventHandlers(Card card) {
@@ -195,6 +200,28 @@ public class Game extends Pane {
         setBackground(new Background(new BackgroundImage(tableBackground,
                 BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT,
                 BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
+    }
+
+    /*public ImageView setRestartButton() {
+        Image restartButton = new Image("/button.png");
+        ImageView restartButtonView = new ImageView(restartButton);
+        restartButtonView.setX(610);
+        restartButtonView.setY(400);
+        restartButtonView.setFitHeight(200);
+        restartButtonView.setFitWidth(200);
+        restartButtonView.setPreserveRatio(true);
+        restartButtonView.setImage(restartButton);
+        return restartButtonView;
+    }*/
+
+    public Button setRestartButton() {
+        Image restartImage = new Image("/button.png");
+        Button restartButton = new Button();
+        restartButton.setText("Restart");
+        restartButton.setGraphic(new ImageView(restartImage));
+        restartButton.setLayoutX(700);
+        restartButton.setLayoutY(600);
+        return restartButton;
     }
 
 }
