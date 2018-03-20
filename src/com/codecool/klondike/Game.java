@@ -221,6 +221,12 @@ public class Game extends Pane {
         restartButton.setGraphic(new ImageView(restartImage));
         restartButton.setLayoutX(700);
         restartButton.setLayoutY(600);
+        restartButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+
+            }
+        });
         return restartButton;
     }
 
