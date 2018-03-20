@@ -158,6 +158,8 @@ public class Game extends Pane {
         stockPile.setOnMouseClicked(stockReverseCardsHandler);
         getChildren().add(stockPile);
 
+
+
         discardPile = new Pile(Pile.PileType.DISCARD, "Discard", STOCK_GAP);
         discardPile.setBlurredBackground();
         discardPile.setLayoutX(285);
