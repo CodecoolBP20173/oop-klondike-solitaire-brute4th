@@ -77,9 +77,13 @@ public class Card extends ImageView {
         return "The " + "Rank" + rank + " of " + "Suit" + suit;
     }
 
+    public boolean isBlack(){
+        return this.getSuit()>2;
+    }
+
     public static boolean isOppositeColor(Card card1, Card card2) {
-        //TODO
-        return true;
+        // TODO
+        return !(card1.isBlack()==card2.isBlack());
     }
 
     public static boolean isSameSuit(Card card1, Card card2) {

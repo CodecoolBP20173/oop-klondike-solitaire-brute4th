@@ -33,7 +33,6 @@ public class Game extends Pane {
     private static double FOUNDATION_GAP = 0;
     private static double TABLEAU_GAP = 30;
 
-
     private EventHandler<MouseEvent> onMouseClickedHandler = e -> {
         Card card = (Card) e.getSource();
         if (card.getContainingPile().getPileType() == Pile.PileType.STOCK) {
@@ -61,7 +60,7 @@ public class Game extends Pane {
         double offsetX = e.getSceneX() - dragStartX;
         double offsetY = e.getSceneY() - dragStartY;
 
-        draggedCards.clear();
+        draggedCards.clear(); // BUGOCSKA?
         draggedCards.add(card);
 
         card.getDropShadow().setRadius(20);
@@ -83,7 +82,7 @@ public class Game extends Pane {
             handleValidMove(card, pile);
         } else {
             draggedCards.forEach(MouseUtil::slideBack);
-            draggedCards = null;
+            draggedCards.clear();
         }
     };
 
@@ -111,9 +110,23 @@ public class Game extends Pane {
     }
 
     public boolean isMoveValid(Card card, Pile destPile) {
-        //TODO
+        // TODO
+        if(destPile.getPileType()==Pile.PileType.TABLEAU) {
+            Card top = destPile.getTopCard();
+            if (top == null) {
+                if (card.getRank() != 13) {
+                    return false;
+                }
+            }
+            if (top != null && !top.isFaceDown()){
+                if (top.getRank() - 1 != card.getRank() || !Card.isOppositeColor(card, top)) {
+                    return false;
+                }
+            }
+        }
         return true;
     }
+
     private Pile getValidIntersectingPile(Card card, List<Pile> piles) {
         Pile result = null;
         for (Pile pile : piles) {
@@ -146,7 +159,6 @@ public class Game extends Pane {
         MouseUtil.slideToDest(draggedCards, destPile);
         draggedCards.clear();
     }
-
 
     private void initPiles() {
         stockPile = new Pile(Pile.PileType.STOCK, "Stock", STOCK_GAP);
