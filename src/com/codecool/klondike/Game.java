@@ -60,7 +60,7 @@ public class Game extends Pane {
         double offsetX = e.getSceneX() - dragStartX;
         double offsetY = e.getSceneY() - dragStartY;
 
-        draggedCards.clear(); // BUGOCSKA?
+        draggedCards.clear();
         draggedCards.add(card);
 
         card.getDropShadow().setRadius(20);
@@ -78,11 +78,17 @@ public class Game extends Pane {
         Card card = (Card) e.getSource();
         Pile pile = getValidIntersectingPile(card, tableauPiles);
         //TODO
+
         if (pile != null) {
             handleValidMove(card, pile);
         } else {
+            pile = getValidIntersectingPile(card, foundationPiles);
+            if (pile != null) {
+                handleValidMove(card, pile);
+            } else {
             draggedCards.forEach(MouseUtil::slideBack);
             draggedCards.clear();
+            }
         }
     };
 
@@ -111,18 +117,29 @@ public class Game extends Pane {
 
     public boolean isMoveValid(Card card, Pile destPile) {
         // TODO
+        Card top = destPile.getTopCard();
         if(destPile.getPileType()==Pile.PileType.TABLEAU) {
-            Card top = destPile.getTopCard();
             if (top == null) {
                 if (card.getRank() != 13) {
                     return false;
                 }
-            }
-            if (top != null && !top.isFaceDown()){
+            } else {
                 if (top.getRank() - 1 != card.getRank() || !Card.isOppositeColor(card, top)) {
                     return false;
                 }
             }
+        }
+        if(destPile.getPileType()==Pile.PileType.FOUNDATION) {
+            if (top == null) {
+                if (card.getRank() != 1) {
+                    return false;
+                }
+            } else {
+                if (top.getRank() + 1 != card.getRank() || !Card.isSameSuit(card, top)) {
+                    return false;
+                }
+            }
+            return true;
         }
         return true;
     }
