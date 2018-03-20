@@ -15,6 +15,10 @@ import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import javafx.geometry.Pos;
+
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -95,12 +99,11 @@ public class Game extends Pane {
         return false;
     }
 
-    public Game() {
+    public Game(Stage primaryStage) {
         deck = Card.createNewDeck();
         initPiles();
         dealCards();
-        setRestartButton();
-        getChildren().add(setRestartButton());
+
     }
 
     public void addMouseEventHandlers(Card card) {
@@ -214,19 +217,21 @@ public class Game extends Pane {
         return restartButtonView;
     }*/
 
-    public Button setRestartButton() {
+    public Button setRestartButton(Stage primaryStage) {
         Image restartImage = new Image("/button.png");
         Button restartButton = new Button();
         restartButton.setText("Restart");
         restartButton.setGraphic(new ImageView(restartImage));
-        restartButton.setLayoutX(700);
+        restartButton.setLayoutX(1200);
         restartButton.setLayoutY(600);
         restartButton.setOnAction(new EventHandler<ActionEvent>() {
+
             @Override
             public void handle(ActionEvent event) {
-
+                Klondike.startGame(primaryStage);
             }
         });
+        restartButton.setAlignment(Pos.BOTTOM_RIGHT);
         return restartButton;
     }
 
