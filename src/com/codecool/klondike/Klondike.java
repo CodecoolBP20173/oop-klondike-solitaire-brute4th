@@ -27,6 +27,7 @@ public class Klondike extends Application {
         primaryStage.setTitle("Klondike Solitaire");
         primaryStage.setScene(new Scene(game, WINDOW_WIDTH, WINDOW_HEIGHT));
         game.getChildren().add(game.setRestartButton(primaryStage));
+        game.getChildren().add(game.setUndoButton(primaryStage));
         primaryStage.show();
     }
 
