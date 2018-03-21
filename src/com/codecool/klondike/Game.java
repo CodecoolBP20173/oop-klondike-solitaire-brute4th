@@ -88,7 +88,8 @@ public class Game extends Pane {
 
     public boolean isGameWon() {
         for (Pile pile: foundationPiles) {
-            if (pile.numOfCards() != 13) {
+            if (pile.numOfCards()== 13) {
+                AlertWindow.display("Victory", "OK?");
                 return false;
             }
         }
@@ -162,6 +163,7 @@ public class Game extends Pane {
         System.out.println(msg);
         MouseUtil.slideToDest(draggedCards, destPile);
         draggedCards.clear();
+        isGameWon();
     }
 
     private void initPiles() {
