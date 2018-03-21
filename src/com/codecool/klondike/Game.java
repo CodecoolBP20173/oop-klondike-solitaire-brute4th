@@ -16,6 +16,13 @@ import javafx.scene.layout.Pane;
 import javafx.scene.control.Control.*;
 import javafx.scene.control.ComboBox;
 import javafx.beans.value.*;
+import javafx.scene.control.*;
+import java.io.File;
+import java.net.*;
+
+import javafx.scene.media.AudioClip;
+import javafx.scene.media.*;
+import javafx.scene.media.MediaPlayer;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -89,8 +96,8 @@ public class Game extends Pane {
             if (pile != null) {
                 handleValidMove(card, pile);
             } else {
-            draggedCards.forEach(MouseUtil::slideBack);
-            draggedCards.clear();
+                draggedCards.forEach(MouseUtil::slideBack);
+                draggedCards.clear();
             }
         }
     };
@@ -127,7 +134,7 @@ public class Game extends Pane {
 
     public boolean isMoveValid(Card card, Pile destPile) {
         Card top = destPile.getTopCard();
-        if(destPile.getPileType()==Pile.PileType.TABLEAU) {
+        if (destPile.getPileType() == Pile.PileType.TABLEAU) {
             if (top == null) {
                 if (card.getRank() != 13) {
                     return false;
@@ -138,7 +145,7 @@ public class Game extends Pane {
                 }
             }
         }
-        if(destPile.getPileType()==Pile.PileType.FOUNDATION) {
+        if (destPile.getPileType() == Pile.PileType.FOUNDATION) {
             if (top == null) {
                 if (card.getRank() != 1) {
                     return false;
@@ -194,7 +201,6 @@ public class Game extends Pane {
         getChildren().add(stockPile);
 
 
-
         discardPile = new Pile(Pile.PileType.DISCARD, "Discard", STOCK_GAP);
         discardPile.setBlurredBackground();
         discardPile.setLayoutX(285);
@@ -243,22 +249,33 @@ public class Game extends Pane {
                 BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
     }
 
-    public ComboBox<String> setComboBox(){
+    public ComboBox<String> setComboBox() {
         ComboBox<String> themes = new ComboBox<String>();
         themes.setPromptText("Theme");
-        themes.getItems().addAll("1.", "2.");
+        themes.getItems().addAll("Green", "Red");
         themes.getSelectionModel().selectFirst();
         themes.valueProperty().addListener(new ChangeListener<String>() {
-            @Override public void changed(ObservableValue ov, String t, String t1) {
-                if (themes.getValue() == "1.") {
+            @Override
+            public void changed(ObservableValue ov, String t, String t1) {
+                if (themes.getValue() == "Green") {
                     setTableBackground(new Image("/table/green.png"));
                 }
-                if (themes.getValue() == "2.") {
+                if (themes.getValue() == "Red") {
                     setTableBackground(new Image("/table/red.jpg"));
                 }
+                musicPlayer();
             }
+
         });
         return themes;
     }
 
+    public void musicPlayer() {
+        String musicFile = "Doom.mp3";
+        Media music = new Media(new File(musicFile).toURI().toString());
+        MediaPlayer player = new MediaPlayer(music);
+        player.play();
+        //AudioClip music = new AudioClip("/table/Doom.mp3");
+        //music.play();
+    }
 }
