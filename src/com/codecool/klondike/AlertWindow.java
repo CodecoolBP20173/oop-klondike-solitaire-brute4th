@@ -5,6 +5,9 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -23,8 +26,13 @@ public class AlertWindow {
         Button closeButton = new Button("Ok");
         closeButton.setOnAction(e -> window.close());
 
+        Image background = new Image("file:resources/victory.jpeg");
+        ImageView iv = new ImageView();
+
+        iv.setImage(background);
+
         VBox layout = new VBox(10);
-        layout.getChildren().addAll(label, closeButton);
+        layout.getChildren().addAll(iv, closeButton);
         layout.setAlignment(Pos.CENTER);
 
         Scene scene = new Scene(layout);
