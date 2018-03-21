@@ -2,9 +2,12 @@ package com.codecool.klondike;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
@@ -12,6 +15,10 @@ import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import javafx.geometry.Pos;
+
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,6 +48,10 @@ public class Game extends Pane {
             card.flip();
             card.setMouseTransparent(false);
             System.out.println("Placed " + card + " to the waste.");
+        }
+        if(card.getContainingPile().getPileType() == Pile.PileType.TABLEAU && card.isFaceDown() && card == card.getContainingPile().getTopCard()){
+            card.flip();
+            System.out.println(card + " flipped");
         }
     };
 
@@ -90,7 +101,7 @@ public class Game extends Pane {
             return;
         Card card = (Card) e.getSource();
         Pile pile = getValidIntersectingPile(card, tableauPiles);
-        if (pile != null) {
+        if (pile != null && !pile.getTopCard().isFaceDown()) {
             handleValidMove(card, pile);
         } else {
             pile = getValidIntersectingPile(card, foundationPiles);
@@ -116,11 +127,12 @@ public class Game extends Pane {
         return false;
     }
 
-    public Game() {
+    public Game(Stage primaryStage) {
         deck = Card.createNewDeck();
         Collections.shuffle(deck);
         initPiles();
         dealCards();
+
     }
 
     public void addMouseEventHandlers(Card card) {
@@ -209,8 +221,6 @@ public class Game extends Pane {
         stockPile.setOnMouseClicked(stockReverseCardsHandler);
         getChildren().add(stockPile);
 
-
-
         discardPile = new Pile(Pile.PileType.DISCARD, "Discard", STOCK_GAP);
         discardPile.setBlurredBackground();
         discardPile.setLayoutX(285);
@@ -257,6 +267,33 @@ public class Game extends Pane {
         setBackground(new Background(new BackgroundImage(tableBackground,
                 BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT,
                 BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
+    }
+
+    public Button setRestartButton(Stage primaryStage) {
+        Button restartButton = new Button();
+        restartButton = formatRestartButton(restartButton);
+        restartButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Klondike.startGame(primaryStage);
+            }
+        });
+        return restartButton;
+    }
+
+    private Button formatRestartButton(Button restartButton) {
+        restartButton.setText("Restart");
+        Image restartImage = new Image("/button.png");
+        ImageView restartButtonImageView = new ImageView(restartImage);
+        restartButtonImageView.setFitHeight(10);
+        restartButtonImageView.setFitWidth(10);
+        restartButton.setGraphic(restartButtonImageView);
+        restartButton.setPrefWidth(80);
+        restartButton.setPrefHeight(40);
+        restartButton.setLayoutX(0);
+        restartButton.setLayoutY(657);
+        restartButton.setAlignment(Pos.CENTER);
+        return restartButton;
     }
 
 }
