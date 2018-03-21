@@ -45,6 +45,9 @@ public class Game extends Pane {
     private static double FOUNDATION_GAP = 0;
     private static double TABLEAU_GAP = 30;
 
+    private static MediaPlayer player;
+    private static Media music;
+
     private EventHandler<MouseEvent> onMouseClickedHandler = e -> {
         Card card = (Card) e.getSource();
         if (card.getContainingPile().getPileType() == Pile.PileType.STOCK) {
@@ -112,6 +115,7 @@ public class Game extends Pane {
         Collections.shuffle(deck);
         initPiles();
         dealCards();
+        musicPlayer("ambient.mp3");
     }
 
     public void addMouseEventHandlers(Card card) {
@@ -259,21 +263,25 @@ public class Game extends Pane {
             public void changed(ObservableValue ov, String t, String t1) {
                 if (themes.getValue() == "Green") {
                     setTableBackground(new Image("/table/green.png"));
+                    if (player != null){player.dispose();}
+                    musicPlayer("ambient.mp3");
                 }
                 if (themes.getValue() == "Red") {
                     setTableBackground(new Image("/table/red.jpg"));
+                    if (player != null){player.dispose();}
+                    musicPlayer("Doom.mp3");
                 }
-                musicPlayer();
+
+
             }
 
         });
         return themes;
     }
 
-    public void musicPlayer() {
-        String musicFile = "Doom.mp3";
-        Media music = new Media(new File(musicFile).toURI().toString());
-        MediaPlayer player = new MediaPlayer(music);
+    public void musicPlayer(String musicFile) {
+        music = new Media(new File(musicFile).toURI().toString());
+        player = new MediaPlayer(music);
         player.play();
         //AudioClip music = new AudioClip("/table/Doom.mp3");
         //music.play();
