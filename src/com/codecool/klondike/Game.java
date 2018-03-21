@@ -264,14 +264,14 @@ public class Game extends Pane {
         restartButton.setText("Restart");
         Image restartImage = new Image("/button.png");
         ImageView restartButtonImageView = new ImageView(restartImage);
-        restartButtonImageView.setFitHeight(22);
-        restartButtonImageView.setFitWidth(22);
+        restartButtonImageView.setFitHeight(10);
+        restartButtonImageView.setFitWidth(10);
         restartButton.setGraphic(restartButtonImageView);
-        restartButton.setPrefWidth(150);
-        restartButton.setPrefHeight(50);
-        restartButton.setLayoutX(1216);
-        restartButton.setLayoutY(647);
-        restartButton.  setAlignment(Pos.CENTER);
+        restartButton.setPrefWidth(80);
+        restartButton.setPrefHeight(40);
+        restartButton.setLayoutX(0);
+        restartButton.setLayoutY(657);
+        restartButton.setAlignment(Pos.CENTER);
         return restartButton;
     }
 
