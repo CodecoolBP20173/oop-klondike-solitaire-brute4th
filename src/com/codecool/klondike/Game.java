@@ -21,6 +21,7 @@ import javafx.geometry.Pos;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -39,7 +40,6 @@ public class Game extends Pane {
     private static double STOCK_GAP = 1;
     private static double FOUNDATION_GAP = 0;
     private static double TABLEAU_GAP = 30;
-
 
     private EventHandler<MouseEvent> onMouseClickedHandler = e -> {
         Card card = (Card) e.getSource();
@@ -85,12 +85,16 @@ public class Game extends Pane {
             return;
         Card card = (Card) e.getSource();
         Pile pile = getValidIntersectingPile(card, tableauPiles);
-        //TODO
         if (pile != null) {
             handleValidMove(card, pile);
         } else {
+            pile = getValidIntersectingPile(card, foundationPiles);
+            if (pile != null) {
+                handleValidMove(card, pile);
+            } else {
             draggedCards.forEach(MouseUtil::slideBack);
-            draggedCards = null;
+            draggedCards.clear();
+            }
         }
     };
 
@@ -101,6 +105,7 @@ public class Game extends Pane {
 
     public Game(Stage primaryStage) {
         deck = Card.createNewDeck();
+        Collections.shuffle(deck);
         initPiles();
         dealCards();
 
@@ -114,14 +119,43 @@ public class Game extends Pane {
     }
 
     public void refillStockFromDiscard() {
-        //TODO
-        System.out.println("Stock refilled from discard pile.");
+        System.out.println(discardPile.numOfCards());
+        List<Card> cards = discardPile.getCards();
+        Collections.reverse(cards);
+        for (Card card : cards) {
+            card.flip();
+            stockPile.addCard(card);
+        }
+        discardPile.clear();
     }
 
     public boolean isMoveValid(Card card, Pile destPile) {
-        //TODO
+        Card top = destPile.getTopCard();
+        if(destPile.getPileType()==Pile.PileType.TABLEAU) {
+            if (top == null) {
+                if (card.getRank() != 13) {
+                    return false;
+                }
+            } else {
+                if (top.getRank() - 1 != card.getRank() || !Card.isOppositeColor(card, top)) {
+                    return false;
+                }
+            }
+        }
+        if(destPile.getPileType()==Pile.PileType.FOUNDATION) {
+            if (top == null) {
+                if (card.getRank() != 1) {
+                    return false;
+                }
+            } else {
+                if (top.getRank() + 1 != card.getRank() || !Card.isSameSuit(card, top)) {
+                    return false;
+                }
+            }
+        }
         return true;
     }
+
     private Pile getValidIntersectingPile(Card card, List<Pile> piles) {
         Pile result = null;
         for (Pile pile : piles) {
@@ -155,7 +189,6 @@ public class Game extends Pane {
         draggedCards.clear();
     }
 
-
     private void initPiles() {
         stockPile = new Pile(Pile.PileType.STOCK, "Stock", STOCK_GAP);
         stockPile.setBlurredBackground();
@@ -163,6 +196,8 @@ public class Game extends Pane {
         stockPile.setLayoutY(20);
         stockPile.setOnMouseClicked(stockReverseCardsHandler);
         getChildren().add(stockPile);
+
+
 
         discardPile = new Pile(Pile.PileType.DISCARD, "Discard", STOCK_GAP);
         discardPile.setBlurredBackground();
@@ -190,13 +225,20 @@ public class Game extends Pane {
 
     public void dealCards() {
         Iterator<Card> deckIterator = deck.iterator();
-        //TODO
         deckIterator.forEachRemaining(card -> {
             stockPile.addCard(card);
             addMouseEventHandlers(card);
             getChildren().add(card);
         });
 
+        for (int i = 0; i < tableauPiles.size(); i++) {
+            for (int j = 0; j < i; j++) {
+                stockPile.getTopCard().moveToPile(tableauPiles.get(i));
+            }
+            Card top = stockPile.getTopCard();
+            top.flip();
+            top.moveToPile(tableauPiles.get(i));
+        }
     }
 
     public void setTableBackground(Image tableBackground) {
