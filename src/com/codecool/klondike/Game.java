@@ -14,6 +14,8 @@ import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.Pane;
 import javafx.scene.control.Control.*;
+import javafx.scene.control.ComboBox;
+import javafx.beans.value.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -245,6 +247,13 @@ public class Game extends Pane {
         ComboBox<String> themes = new ComboBox<String>();
         themes.setPromptText("Theme");
         themes.getItems().addAll("1.", "2.");
+        themes.getSelectionModel().selectFirst();
+        themes.valueProperty().addListener(new ChangeListener<String>() {
+            @Override public void changed(ObservableValue ov, String t, String t1) {
+                System.out.println(t);
+                System.out.println(t1);
+            }
+        });
         return themes;
     }
 
