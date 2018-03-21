@@ -250,8 +250,12 @@ public class Game extends Pane {
         themes.getSelectionModel().selectFirst();
         themes.valueProperty().addListener(new ChangeListener<String>() {
             @Override public void changed(ObservableValue ov, String t, String t1) {
-                System.out.println(t);
-                System.out.println(t1);
+                if (themes.getValue() == "1.") {
+                    setTableBackground(new Image("/table/green.png"));
+                }
+                if (themes.getValue() == "2.") {
+                    setTableBackground(new Image("/table/red.jpg"));
+                }
             }
         });
         return themes;
