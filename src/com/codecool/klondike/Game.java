@@ -5,7 +5,9 @@ import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
@@ -13,6 +15,10 @@ import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import javafx.geometry.Pos;
+
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -66,7 +72,7 @@ public class Game extends Pane {
         double offsetX = e.getSceneX() - dragStartX;
         double offsetY = e.getSceneY() - dragStartY;
 
-        draggedCards.clear(); // BUGOCSKA?
+        draggedCards.clear();
         draggedCards.add(card);
 
         card.getDropShadow().setRadius(20);
@@ -83,12 +89,16 @@ public class Game extends Pane {
             return;
         Card card = (Card) e.getSource();
         Pile pile = getValidIntersectingPile(card, tableauPiles);
-        //TODO
         if (pile != null && !pile.getTopCard().isFaceDown()) {
             handleValidMove(card, pile);
         } else {
+            pile = getValidIntersectingPile(card, foundationPiles);
+            if (pile != null) {
+                handleValidMove(card, pile);
+            } else {
             draggedCards.forEach(MouseUtil::slideBack);
             draggedCards.clear();
+            }
         }
     };
 
@@ -97,11 +107,12 @@ public class Game extends Pane {
         return false;
     }
 
-    public Game() {
+    public Game(Stage primaryStage) {
         deck = Card.createNewDeck();
         Collections.shuffle(deck);
         initPiles();
         dealCards();
+
     }
 
     public void addMouseEventHandlers(Card card) {
@@ -112,21 +123,36 @@ public class Game extends Pane {
     }
 
     public void refillStockFromDiscard() {
-        //TODO
-        System.out.println("Stock refilled from discard pile.");
+        System.out.println(discardPile.numOfCards());
+        List<Card> cards = discardPile.getCards();
+        Collections.reverse(cards);
+        for (Card card : cards) {
+            card.flip();
+            stockPile.addCard(card);
+        }
+        discardPile.clear();
     }
 
     public boolean isMoveValid(Card card, Pile destPile) {
-        // TODO
+        Card top = destPile.getTopCard();
         if(destPile.getPileType()==Pile.PileType.TABLEAU) {
-            Card top = destPile.getTopCard();
             if (top == null) {
                 if (card.getRank() != 13) {
                     return false;
                 }
-            }
-            if (top != null && !top.isFaceDown()){
+            } else {
                 if (top.getRank() - 1 != card.getRank() || !Card.isOppositeColor(card, top)) {
+                    return false;
+                }
+            }
+        }
+        if(destPile.getPileType()==Pile.PileType.FOUNDATION) {
+            if (top == null) {
+                if (card.getRank() != 1) {
+                    return false;
+                }
+            } else {
+                if (top.getRank() + 1 != card.getRank() || !Card.isSameSuit(card, top)) {
                     return false;
                 }
             }
@@ -222,4 +248,32 @@ public class Game extends Pane {
                 BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT,
                 BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
     }
+
+    public Button setRestartButton(Stage primaryStage) {
+        Button restartButton = new Button();
+        restartButton = formatRestartButton(restartButton);
+        restartButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Klondike.startGame(primaryStage);
+            }
+        });
+        return restartButton;
+    }
+
+    private Button formatRestartButton(Button restartButton) {
+        restartButton.setText("Restart");
+        Image restartImage = new Image("/button.png");
+        ImageView restartButtonImageView = new ImageView(restartImage);
+        restartButtonImageView.setFitHeight(10);
+        restartButtonImageView.setFitWidth(10);
+        restartButton.setGraphic(restartButtonImageView);
+        restartButton.setPrefWidth(80);
+        restartButton.setPrefHeight(40);
+        restartButton.setLayoutX(0);
+        restartButton.setLayoutY(657);
+        restartButton.setAlignment(Pos.CENTER);
+        return restartButton;
+    }
+
 }
