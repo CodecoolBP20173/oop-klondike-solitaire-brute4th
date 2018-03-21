@@ -4,6 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ComboBox;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
@@ -12,6 +13,7 @@ import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.Pane;
+import javafx.scene.control.Control.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -237,6 +239,13 @@ public class Game extends Pane {
         setBackground(new Background(new BackgroundImage(tableBackground,
                 BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT,
                 BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
+    }
+
+    public ComboBox<String> setComboBox(){
+        ComboBox<String> themes = new ComboBox<String>();
+        themes.setPromptText("Theme");
+        themes.getItems().addAll("1.", "2.");
+        return themes;
     }
 
 }
