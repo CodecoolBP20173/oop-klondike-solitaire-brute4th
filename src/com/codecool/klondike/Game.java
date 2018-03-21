@@ -58,19 +58,31 @@ public class Game extends Pane {
         Pile activePile = card.getContainingPile();
         if (activePile.getPileType() == Pile.PileType.STOCK)
             return;
+        if (activePile.getPileType() == Pile.PileType.DISCARD && activePile.getTopCard() != card) {
+            return;
+        }
+        if (activePile.getPileType() == Pile.PileType.TABLEAU) {
+            if (card.isFaceDown()) {
+                return;
+            }
+        }
         double offsetX = e.getSceneX() - dragStartX;
         double offsetY = e.getSceneY() - dragStartY;
-
         draggedCards.clear();
-        draggedCards.add(card);
-
+        makeCardMove(card, offsetX, offsetY);
         card.getDropShadow().setRadius(20);
         card.getDropShadow().setOffsetX(10);
         card.getDropShadow().setOffsetY(10);
 
-        card.toFront();
-        card.setTranslateX(offsetX);
-        card.setTranslateY(offsetY);
+        if (activePile.getTopCard() != card) {
+            List<Card> tailCards = activePile.getCards();
+            int index = tailCards.indexOf(card);
+            for (int i = index + 1; i< tailCards.size();i++) {
+                offsetX = e.getSceneX() - dragStartX;
+                offsetY = e.getSceneY() - dragStartY;
+                makeCardMove(tailCards.get(i), offsetX, offsetY);
+            }
+        }
     };
 
     private EventHandler<MouseEvent> onMouseReleasedHandler = e -> {
@@ -85,11 +97,19 @@ public class Game extends Pane {
             if (pile != null) {
                 handleValidMove(card, pile);
             } else {
-            draggedCards.forEach(MouseUtil::slideBack);
-            draggedCards.clear();
+                draggedCards.forEach(MouseUtil::slideBack);
+                draggedCards.clear();
             }
         }
     };
+
+    public void makeCardMove(Card card, double offsetX, double offsetY) {
+        draggedCards.add(card);
+        card.toFront();
+        card.setTranslateX(offsetX);
+        card.setTranslateY(offsetY);
+    };
+
 
     public boolean isGameWon() {
         //TODO
