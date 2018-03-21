@@ -218,20 +218,29 @@ public class Game extends Pane {
     }*/
 
     public Button setRestartButton(Stage primaryStage) {
-        Image restartImage = new Image("/button.png");
         Button restartButton = new Button();
-        restartButton.setText("Restart");
-        restartButton.setGraphic(new ImageView(restartImage));
-        restartButton.setLayoutX(1200);
-        restartButton.setLayoutY(600);
+        restartButton = formatRestartButton(restartButton);
         restartButton.setOnAction(new EventHandler<ActionEvent>() {
-
             @Override
             public void handle(ActionEvent event) {
                 Klondike.startGame(primaryStage);
             }
         });
-        restartButton.setAlignment(Pos.BOTTOM_RIGHT);
+        return restartButton;
+    }
+
+    private Button formatRestartButton(Button restartButton) {
+        restartButton.setText("Restart");
+        Image restartImage = new Image("/button.png");
+        ImageView restartButtonImageView = new ImageView(restartImage);
+        restartButtonImageView.setFitHeight(22);
+        restartButtonImageView.setFitWidth(22);
+        restartButton.setGraphic(restartButtonImageView);
+        restartButton.setPrefWidth(150);
+        restartButton.setPrefHeight(50);
+        restartButton.setLayoutX(1216);
+        restartButton.setLayoutY(647);
+        restartButton.  setAlignment(Pos.CENTER);
         return restartButton;
     }
 
