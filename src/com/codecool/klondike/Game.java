@@ -247,17 +247,6 @@ public class Game extends Pane {
                 BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
     }
 
-    /*public ImageView setRestartButton() {
-        Image restartButton = new Image("/button.png");
-        ImageView restartButtonView = new ImageView(restartButton);
-        restartButtonView.setX(610);
-        restartButtonView.setY(400);
-        restartButtonView.setFitHeight(200);
-        restartButtonView.setFitWidth(200);
-        restartButtonView.setPreserveRatio(true);
-        restartButtonView.setImage(restartButton);
-        return restartButtonView;
-    }*/
 
     public Button setRestartButton(Stage primaryStage) {
         Button restartButton = new Button();
