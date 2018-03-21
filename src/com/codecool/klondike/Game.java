@@ -1,5 +1,6 @@
 package com.codecool.klondike;
 
+import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
@@ -19,6 +20,7 @@ import javafx.beans.value.*;
 import javafx.scene.control.*;
 import java.io.File;
 import java.net.*;
+import javafx.util.Duration;
 
 import javafx.scene.media.AudioClip;
 import javafx.scene.media.*;
@@ -263,27 +265,22 @@ public class Game extends Pane {
             public void changed(ObservableValue ov, String t, String t1) {
                 if (themes.getValue() == "Green") {
                     setTableBackground(new Image("/table/green.png"));
-                    if (player != null){player.dispose();}
                     musicPlayer("ambient.mp3");
                 }
                 if (themes.getValue() == "Red") {
                     setTableBackground(new Image("/table/red.jpg"));
-                    if (player != null){player.dispose();}
                     musicPlayer("Doom.mp3");
                 }
-
-
             }
-
         });
         return themes;
     }
 
     public void musicPlayer(String musicFile) {
+        if (player != null){player.dispose();}
         music = new Media(new File(musicFile).toURI().toString());
         player = new MediaPlayer(music);
-        player.play();
-        //AudioClip music = new AudioClip("/table/Doom.mp3");
-        //music.play();
+        player.setAutoPlay(true);
+        player.setCycleCount(Timeline.INDEFINITE); //It puts MediaPlayer in an infinite loop
     }
 }
