@@ -87,13 +87,14 @@ public class Game extends Pane {
     };
 
     public boolean isGameWon() {
+        int sumOfCards = 0;
         for (Pile pile: foundationPiles) {
-            if (pile.numOfCards()== 13) {
-                AlertWindow.display("Victory", "OK?");
-                return false;
+            sumOfCards += pile.numOfCards();
             }
-        }
-        return true;
+            if (sumOfCards == 51) {
+            return true;
+            }
+        return false;
     }
 
     public Game() {
@@ -163,7 +164,9 @@ public class Game extends Pane {
         System.out.println(msg);
         MouseUtil.slideToDest(draggedCards, destPile);
         draggedCards.clear();
-        isGameWon();
+        if (isGameWon()){
+            AlertWindow.display("Victory", "OK?");
+        }
     }
 
     private void initPiles() {
