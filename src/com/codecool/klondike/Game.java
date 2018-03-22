@@ -4,6 +4,7 @@ import javafx.animation.Timeline;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -11,14 +12,18 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
+import javafx.geometry.Pos;
 
-import java.io.File;
+
 import java.util.*;
+import java.io.File;
+
 
 public class Game extends Pane {
 
@@ -40,6 +45,39 @@ public class Game extends Pane {
     private static Media music;
 
     private Deque<StepEvent> events = new ArrayDeque<>();
+
+
+    public void cheat() {
+        List<Card> kings = new ArrayList<>();
+        int counter = deck.size();
+        for (Card card : deck) {
+            if (card.getRank() == 13) {
+                kings.add(card);
+            } else {
+                cheatAnimation(card);
+                counter--;
+                if (counter < 5) {
+                    for (Card king : kings) {
+                        cheatAnimation(king);
+                    }
+                }
+            }
+        }
+    }
+
+    private void cheatAnimation(Card card) {
+        if (card.isFaceDown()) {
+            card.flip();
+        }
+        List<Card> cardS = Collections.singletonList(card);
+        MouseUtil.slideToDest(cardS, foundationPiles.get(card.getSuit() - 1));
+        try {
+            Thread.sleep(50);
+        } catch (InterruptedException e) {
+            //there is nothing to do
+        }
+
+    }
 
     private EventHandler<MouseEvent> onMouseClickedHandler = e -> {
         Card card = (Card) e.getSource();
@@ -125,17 +163,14 @@ public class Game extends Pane {
         card.setTranslateY(offsetY);
     }
 
-    ;
-
-
     public boolean isGameWon() {
         int sumOfCards = 0;
         for (Pile pile: foundationPiles) {
             sumOfCards += pile.numOfCards();
-            }
-            if (sumOfCards == 0) {
+        }
+        if (sumOfCards == 51) {
             return true;
-            }
+        }
         return false;
     }
 
@@ -234,7 +269,7 @@ public class Game extends Pane {
         System.out.println(msg);
         MouseUtil.slideToDest(draggedCards, destPile);
         draggedCards.clear();
-        if (isGameWon()){
+        if (isGameWon()) {
             AlertWindow.display("Victory", "OK?");
         }
     }
