@@ -161,6 +161,8 @@ public class Game extends Pane {
             card.flip();
             stockPile.addCard(card);
         }
+        StepEvent event = new StepEvent(StepEvent.EventType.STOCK);
+        events.push(event);
         discardPile.clear();
     }
 
@@ -214,7 +216,12 @@ public class Game extends Pane {
 
     private void handleValidMove(Card card, Pile destPile) {
         String msg = null;
-        StepEvent event = new StepEvent(card, card.getContainingPile(), StepEvent.EventType.MOVE);
+        StepEvent event = null;
+        if (draggedCards.size() == 1) {
+            event = new StepEvent(card, card.getContainingPile(), StepEvent.EventType.MOVE);
+        } else {
+            event = new StepEvent(draggedCards, card.getContainingPile(), StepEvent.EventType.MULTIPLE);
+        }
         events.push(event);
         if (destPile.isEmpty()) {
             if (destPile.getPileType().equals(Pile.PileType.FOUNDATION))
@@ -314,18 +321,35 @@ public class Game extends Pane {
                 } catch (Exception e) {
                     return;
                 }
-                Card card = undoEvent.card;
-                Pile prevPile = undoEvent.previousPile;
                 switch (undoEvent.et) {
                     case MOVE:
+                        Card card = undoEvent.cards.get(0);
+                        Pile prevPile = undoEvent.previousPile;
                         card.moveToPile(prevPile);
                         break;
                     case FLIP:
+                        card = undoEvent.cards.get(0);
                         card.flip();
                         break;
                     case BOTH:
+                        card = undoEvent.cards.get(0);
+                        prevPile = undoEvent.previousPile;
                         card.moveToPile(prevPile);
                         card.flip();
+                        break;
+                    case MULTIPLE:
+                        prevPile = undoEvent.previousPile;
+                        MouseUtil.slideToDest(undoEvent.cards, prevPile);
+                        break;
+                    case STOCK:
+                        List<Card> stockCards = new ArrayList<>();
+                        stockCards.addAll(stockPile.getCards());
+                        Collections.reverse(stockCards);
+                        for (Card cardUndo : stockCards) {
+                            cardUndo.flip();
+                            discardPile.addCard(cardUndo);
+                        }
+                        stockPile.clear();
                         break;
                 }
             }
