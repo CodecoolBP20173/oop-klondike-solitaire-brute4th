@@ -270,6 +270,8 @@ public class Game extends Pane {
                 if (themes.getValue() == "Red") {
                     setTableBackground(new Image("/table/red.jpg"));
                     musicPlayer("Doom.mp3");
+                    Card.loadCardImages("horror/");
+                    changeTheme();
                 }
             }
         });
@@ -282,5 +284,14 @@ public class Game extends Pane {
         player = new MediaPlayer(music);
         player.setAutoPlay(true);
         player.setCycleCount(Timeline.INDEFINITE); //It puts MediaPlayer in an infinite loop
+    }
+
+    public void changeTheme(){
+        for (int i = 0; i < deck.size(); i++) {
+            Card currentCard = deck.get(i);
+            currentCard.backFace = Card.cardBackImage;
+            currentCard.frontFace = Card.cardFaceImages.get(currentCard.getShortName());
+            currentCard.setImage(currentCard.faceDown ? currentCard.backFace : currentCard.frontFace);
+        }
     }
 }

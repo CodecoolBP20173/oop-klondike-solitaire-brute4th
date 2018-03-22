@@ -11,15 +11,15 @@ public class Card extends ImageView {
 
     private int suit;
     private int rank;
-    private boolean faceDown;
+    public boolean faceDown;
 
-    private Image backFace;
-    private Image frontFace;
+    public Image backFace;
+    public Image frontFace;
     private Pile containingPile;
     private DropShadow dropShadow;
 
     static Image cardBackImage;
-    private static final Map<String, Image> cardFaceImages = new HashMap<>();
+    public static final Map<String, Image> cardFaceImages = new HashMap<>();
     public static final int WIDTH = 150;
     public static final int HEIGHT = 215;
 
@@ -94,14 +94,16 @@ public class Card extends ImageView {
         List<Card> result = new ArrayList<>();
         for (int suit = 1; suit < 5; suit++) {
             for (int rank = 1; rank < 14; rank++) {
-                result.add(new Card(suit, rank, true));
+                Card card = new Card(suit, rank, true);
+                result.add(card);
             }
         }
         return result;
     }
 
-    public static void loadCardImages() {
-        cardBackImage = new Image("card_images/card_back.png");
+
+    public static void loadCardImages(String themeUrl) {
+        cardBackImage = new Image("card_images/"+ themeUrl +"card_back.png");
         String suitName = "";
         for (int suit = 1; suit < 5; suit++) {
             switch (suit) {
@@ -121,9 +123,10 @@ public class Card extends ImageView {
             for (int rank = 1; rank < 14; rank++) {
                 String cardName = suitName + rank;
                 String cardId = "S" + suit + "R" + rank;
-                String imageFileName = "card_images/" + cardName + ".png";
+                String imageFileName = "card_images/" + themeUrl + cardName + ".png";
                 cardFaceImages.put(cardId, new Image(imageFileName));
             }
+            System.out.println(cardBackImage);
         }
     }
 
