@@ -3,6 +3,7 @@ package com.codecool.klondike;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
 public class Klondike extends Application {
@@ -28,6 +29,12 @@ public class Klondike extends Application {
         primaryStage.setScene(new Scene(game, WINDOW_WIDTH, WINDOW_HEIGHT));
         game.getChildren().add(game.setRestartButton(primaryStage));
         primaryStage.show();
+
+        game.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.W) {
+                System.out.println("Cheat button pressed!");
+            }
+        });
     }
 
 }
