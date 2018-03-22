@@ -5,7 +5,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Card extends ImageView {
 
@@ -13,8 +16,8 @@ public class Card extends ImageView {
     private int rank;
     private boolean faceDown;
 
-    private Image backFace;
-    private Image frontFace;
+    public Image backFace;
+    public Image frontFace;
     private Pile containingPile;
     private DropShadow dropShadow;
 
@@ -94,14 +97,16 @@ public class Card extends ImageView {
         List<Card> result = new ArrayList<>();
         for (int suit = 1; suit < 5; suit++) {
             for (int rank = 1; rank < 14; rank++) {
-                result.add(new Card(suit, rank, true));
+                Card card = new Card(suit, rank, true);
+                result.add(card);
             }
         }
         return result;
     }
 
-    public static void loadCardImages() {
-        cardBackImage = new Image("card_images/card_back.png");
+
+    public static void loadCardImages(String themeUrl) {
+        cardBackImage = new Image("card_images/"+ themeUrl +"card_back.png");
         String suitName = "";
         for (int suit = 1; suit < 5; suit++) {
             switch (suit) {
@@ -121,10 +126,16 @@ public class Card extends ImageView {
             for (int rank = 1; rank < 14; rank++) {
                 String cardName = suitName + rank;
                 String cardId = "S" + suit + "R" + rank;
-                String imageFileName = "card_images/" + cardName + ".png";
+                String imageFileName = "card_images/" + themeUrl + cardName + ".png";
                 cardFaceImages.put(cardId, new Image(imageFileName));
             }
         }
+    }
+
+    public void changeCardTheme(){
+        backFace = cardBackImage;
+        frontFace = cardFaceImages.get(getShortName());
+        setImage(faceDown ? backFace : frontFace);
     }
 
 }
