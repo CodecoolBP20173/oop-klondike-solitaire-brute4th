@@ -104,7 +104,7 @@ public class Game extends Pane {
         Collections.shuffle(deck);
         initPiles();
         dealCards();
-        musicPlayer("ambient.mp3");
+        musicPlayer("resources/audio/ambient.mp3");
     }
 
     public void addMouseEventHandlers(Card card) {
@@ -245,22 +245,16 @@ public class Game extends Pane {
     public ComboBox<String> setComboBox() {
         ComboBox<String> themes = new ComboBox<String>();
         themes.setPromptText("Theme");
-        themes.getItems().addAll("Green", "Red");
+        themes.getItems().addAll("Green", "Horror");
         themes.getSelectionModel().selectFirst();
         themes.valueProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
                 if (themes.getValue() == "Green") {
-                    setTableBackground(new Image("/table/green.png"));
-                    musicPlayer("ambient.mp3");
-                    Card.loadCardImages("default/");
-                    changeTheme();
+                    changeTheme("table/green.png", "resources/audio/ambient.mp3", "default/");
                 }
-                if (themes.getValue() == "Red") {
-                    setTableBackground(new Image("/table/red.jpg"));
-                    musicPlayer("Doom.mp3");
-                    Card.loadCardImages("horror/");
-                    changeTheme();
+                if (themes.getValue() == "Horror") {
+                    changeTheme("table/red.jpg", "resources/audio/Doom.mp3", "horror/");
                 }
             }
         });
@@ -275,7 +269,10 @@ public class Game extends Pane {
         player.setCycleCount(Timeline.INDEFINITE); //It puts MediaPlayer in an infinite loop
     }
 
-    public void changeTheme(){
+    public void changeTheme(String bgImgUrl, String musicFile, String themeUrl){
+        setTableBackground(new Image(bgImgUrl));
+        musicPlayer(musicFile);
+        Card.loadCardImages(themeUrl);
         for (int i = 0; i < deck.size(); i++) {
             Card currentCard = deck.get(i);
             currentCard.changeCardTheme();
