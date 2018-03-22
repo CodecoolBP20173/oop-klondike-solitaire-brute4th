@@ -1,24 +1,23 @@
 package com.codecool.klondike;
 
+import javafx.animation.Timeline;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.Alert;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.BackgroundPosition;
-import javafx.scene.layout.BackgroundRepeat;
-import javafx.scene.layout.BackgroundSize;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
-import javafx.geometry.Pos;
 
-
+import java.io.File;
 import java.util.*;
 
 public class Game extends Pane {
@@ -36,6 +35,9 @@ public class Game extends Pane {
     private static double STOCK_GAP = 1;
     private static double FOUNDATION_GAP = 0;
     private static double TABLEAU_GAP = 30;
+
+    private static MediaPlayer player;
+    private static Media music;
 
     private Deque<StepEvent> events = new ArrayDeque<>();
 
@@ -131,18 +133,18 @@ public class Game extends Pane {
         for (Pile pile: foundationPiles) {
             sumOfCards += pile.numOfCards();
             }
-            if (sumOfCards == 51) {
+            if (sumOfCards == 0) {
             return true;
             }
         return false;
     }
 
-    public Game(Stage primaryStage) {
+    public Game() {
         deck = Card.createNewDeck();
         Collections.shuffle(deck);
         initPiles();
         dealCards();
-
+        musicPlayer("resources/audio/ambient.mp3");
     }
 
     public void addMouseEventHandlers(Card card) {
@@ -238,6 +240,7 @@ public class Game extends Pane {
         stockPile.setOnMouseClicked(stockReverseCardsHandler);
         getChildren().add(stockPile);
 
+
         discardPile = new Pile(Pile.PileType.DISCARD, "Discard", STOCK_GAP);
         discardPile.setBlurredBackground();
         discardPile.setLayoutX(285);
@@ -288,7 +291,8 @@ public class Game extends Pane {
 
     public Button setRestartButton(Stage primaryStage) {
         Button restartButton = new Button();
-        restartButton = formatRestartButton(restartButton);
+        //restartButton =
+        formatButton(restartButton, "Restart", 657);
         restartButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -300,7 +304,7 @@ public class Game extends Pane {
 
     public Button setUndoButton(Stage primaryStage) {
         Button undoButton = new Button();
-        undoButton = formatUndoButton(undoButton);
+        formatButton(undoButton, "Undo", 617);
         undoButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -329,34 +333,56 @@ public class Game extends Pane {
         return undoButton;
     }
 
-    private Button formatRestartButton(Button restartButton) {
-        restartButton.setText("Restart");
-        Image restartImage = new Image("/button.png");
-        ImageView restartButtonImageView = new ImageView(restartImage);
-        restartButtonImageView.setFitHeight(10);
-        restartButtonImageView.setFitWidth(10);
-        restartButton.setGraphic(restartButtonImageView);
-        restartButton.setPrefWidth(80);
-        restartButton.setPrefHeight(40);
-        restartButton.setLayoutX(0);
-        restartButton.setLayoutY(657);
-        restartButton.setAlignment(Pos.CENTER);
-        return restartButton;
+    private void formatButton(Button button, String buttonText, int Y){
+        button.setText(buttonText);
+        Image buttonImage = new Image("/ui/button.png");
+        ImageView ButtonImageView = new ImageView(buttonImage);
+        ButtonImageView.setFitHeight(10);
+        ButtonImageView.setFitWidth(10);
+        button.setGraphic(ButtonImageView);
+        button.setPrefWidth(80);
+        button.setPrefHeight(40);
+        button.setLayoutX(0);
+        button.setLayoutY(Y);
+        button.setAlignment(Pos.CENTER);
     }
 
-    private Button formatUndoButton(Button undoButton) {
-        undoButton.setText("Undo");
-        Image restartImage = new Image("/button.png");
-        ImageView restartButtonImageView = new ImageView(restartImage);
-        restartButtonImageView.setFitHeight(10);
-        restartButtonImageView.setFitWidth(10);
-        undoButton.setGraphic(restartButtonImageView);
-        undoButton.setPrefWidth(80);
-        undoButton.setPrefHeight(40);
-        undoButton.setLayoutX(0);
-        undoButton.setLayoutY(697);
-        undoButton.setAlignment(Pos.CENTER);
-        return undoButton;
+    public ComboBox<String> setComboBox() {
+        ComboBox<String> themes = new ComboBox<String>();
+        themes.setPromptText("Theme");
+        themes.getItems().addAll("Green", "Horror");
+        themes.getSelectionModel().selectFirst();
+        themes.valueProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue ov, String t, String t1) {
+                if (themes.getValue() == "Green") {
+                    changeTheme("table/green.png", "resources/audio/ambient.mp3", "default/");
+                    AlertWindow.setVictoryImage(false);
+                }
+                if (themes.getValue() == "Horror") {
+                    changeTheme("table/red.jpg", "resources/audio/Doom.mp3", "horror/");
+                    AlertWindow.setVictoryImage(true);
+                }
+            }
+        });
+        return themes;
     }
 
+    public void musicPlayer(String musicFile) {
+        if (player != null){player.dispose();}
+        music = new Media(new File(musicFile).toURI().toString());
+        player = new MediaPlayer(music);
+        player.setAutoPlay(true);
+        player.setCycleCount(Timeline.INDEFINITE); //It puts MediaPlayer in an infinite loop
+    }
+
+    public void changeTheme(String bgImgUrl, String musicFile, String themeUrl){
+        setTableBackground(new Image(bgImgUrl));
+        musicPlayer(musicFile);
+        Card.loadCardImages(themeUrl);
+        for (int i = 0; i < deck.size(); i++) {
+            Card currentCard = deck.get(i);
+            currentCard.changeCardTheme();
+        }
+    }
 }

@@ -20,14 +20,15 @@ public class Klondike extends Application {
     }
 
     public static void startGame(Stage primaryStage) {
-        Card.loadCardImages();
-        Game game = new Game(primaryStage);
+        Card.loadCardImages("default/");
+        Game game = new Game();
         game.setTableBackground(new Image("/table/green.png"));
 
         primaryStage.setTitle("Klondike Solitaire");
         primaryStage.setScene(new Scene(game, WINDOW_WIDTH, WINDOW_HEIGHT));
         game.getChildren().add(game.setRestartButton(primaryStage));
         game.getChildren().add(game.setUndoButton(primaryStage));
+        game.getChildren().add(game.setComboBox());
         primaryStage.show();
     }
 

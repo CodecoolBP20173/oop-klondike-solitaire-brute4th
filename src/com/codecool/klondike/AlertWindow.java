@@ -7,12 +7,24 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class AlertWindow {
+
+    private static final Image defaultVictoryImage = new Image("file:resources/victory_screen/default.jpg");
+    private static final Image horrorVictoryImage = new Image("file:resources/victory_screen/freedy.jpg");
+    private static Image victoryImage = defaultVictoryImage;
+
+
+    public static void setVictoryImage(boolean isHorror){
+        if (isHorror){
+            victoryImage = horrorVictoryImage;
+        } else {
+            victoryImage = defaultVictoryImage;
+        }
+    }
 
     public static void display(String title, String message) {
         Stage window = new Stage();
@@ -26,7 +38,7 @@ public class AlertWindow {
         Button closeButton = new Button("Close");
         closeButton.setOnAction(e -> window.close());
 
-        Image background = new Image("file:resources/freedy.jpg");
+        Image background = victoryImage;
         ImageView iv = new ImageView();
 
         iv.setImage(background);
