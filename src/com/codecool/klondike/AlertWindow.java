@@ -23,10 +23,10 @@ public class AlertWindow {
 
         Label label = new Label();
         label.setText(message);
-        Button closeButton = new Button("Ok");
+        Button closeButton = new Button("Close");
         closeButton.setOnAction(e -> window.close());
 
-        Image background = new Image("file:resources/victory.jpeg");
+        Image background = new Image("file:resources/freedy.jpg");
         ImageView iv = new ImageView();
 
         iv.setImage(background);
