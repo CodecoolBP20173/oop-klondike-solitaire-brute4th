@@ -43,13 +43,10 @@ public class Klondike extends Application {
                     public void run() {
                         game.cheat();
                     }
-
                 });
 
                 t1.start();
                 AlertWindow.display("Victory", "OK?");
-
-
             }
         });
     }
