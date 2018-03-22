@@ -133,7 +133,7 @@ public class Game extends Pane {
         for (Pile pile: foundationPiles) {
             sumOfCards += pile.numOfCards();
             }
-            if (sumOfCards == 51) {
+            if (sumOfCards == 0) {
             return true;
             }
         return false;
@@ -335,7 +335,7 @@ public class Game extends Pane {
 
     private void formatButton(Button button, String buttonText, int Y){
         button.setText(buttonText);
-        Image buttonImage = new Image("/button.png");
+        Image buttonImage = new Image("/ui/button.png");
         ImageView ButtonImageView = new ImageView(buttonImage);
         ButtonImageView.setFitHeight(10);
         ButtonImageView.setFitWidth(10);
@@ -357,9 +357,11 @@ public class Game extends Pane {
             public void changed(ObservableValue ov, String t, String t1) {
                 if (themes.getValue() == "Green") {
                     changeTheme("table/green.png", "resources/audio/ambient.mp3", "default/");
+                    AlertWindow.setVictoryImage(false);
                 }
                 if (themes.getValue() == "Horror") {
                     changeTheme("table/red.jpg", "resources/audio/Doom.mp3", "horror/");
+                    AlertWindow.setVictoryImage(true);
                 }
             }
         });
