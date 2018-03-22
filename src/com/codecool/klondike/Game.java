@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Arrays;
+
 
 public class Game extends Pane {
 
@@ -43,38 +45,34 @@ public class Game extends Pane {
     private static double TABLEAU_GAP = 30;
 
     public void cheat() {
-        List<Card> cardS = new ArrayList();
-        List<Card> kings = new ArrayList();
-        for (Card card:deck) {
-//            if (card.getRank() == 13) {
-//                kings.add(card);
-//            } else {
-                cardS.add(card);
-                if (card.isFaceDown()) {
-                    card.flip();
+        List<Card> kings = new ArrayList<>();
+        int counter = deck.size();
+        for (Card card : deck) {
+            if (card.getRank() == 13) {
+                kings.add(card);
+            } else {
+                cheatAnimation(card);
+                counter--;
+                if (counter < 5) {
+                    for (Card king : kings) {
+                        cheatAnimation(king);
+                    }
                 }
-
-                MouseUtil.slideToDest(cardS, foundationPiles.get(card.getSuit() - 1));
-                cardS.clear();
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    //vmi
-                }
-                isGameWon();
             }
-//        }
-//        for (Card card:kings) {
-//            MouseUtil.slideToDest(kings, foundationPiles.get(card.getSuit() - 1));
-//            cardS.clear();
-//            try {
-//                Thread.sleep(100);
-//            } catch (InterruptedException e) {
-//                //vmi
-//            }
-//        }
+        }
+    }
 
-        System.out.println("Cheat button!");
+    private void cheatAnimation(Card card) {
+        if (card.isFaceDown()) {
+            card.flip();
+        }
+        List<Card> cardS = Collections.singletonList(card);
+        MouseUtil.slideToDest(cardS, foundationPiles.get(card.getSuit() - 1));
+        try {
+            Thread.sleep(50);
+        } catch (InterruptedException e) {
+            //there is nothing to do
+        }
 
     }
 
@@ -86,7 +84,7 @@ public class Game extends Pane {
             card.setMouseTransparent(false);
             System.out.println("Placed " + card + " to the waste.");
         }
-        if(card.getContainingPile().getPileType() == Pile.PileType.TABLEAU && card.isFaceDown() && card == card.getContainingPile().getTopCard()){
+        if (card.getContainingPile().getPileType() == Pile.PileType.TABLEAU && card.isFaceDown() && card == card.getContainingPile().getTopCard()) {
             card.flip();
             System.out.println(card + " flipped");
         }
@@ -125,7 +123,7 @@ public class Game extends Pane {
         if (activePile.getTopCard() != card) {
             List<Card> tailCards = activePile.getCards();
             int index = tailCards.indexOf(card);
-            for (int i = index + 1; i< tailCards.size();i++) {
+            for (int i = index + 1; i < tailCards.size(); i++) {
                 offsetX = e.getSceneX() - dragStartX;
                 offsetY = e.getSceneY() - dragStartY;
                 makeCardMove(tailCards.get(i), offsetX, offsetY);
@@ -156,17 +154,16 @@ public class Game extends Pane {
         card.toFront();
         card.setTranslateX(offsetX);
         card.setTranslateY(offsetY);
-    };
-
+    }
 
     public boolean isGameWon() {
         int sumOfCards = 0;
-        for (Pile pile: foundationPiles) {
+        for (Pile pile : foundationPiles) {
             sumOfCards += pile.numOfCards();
-            }
-            if (sumOfCards == 51) {
+        }
+        if (sumOfCards == 51) {
             return true;
-            }
+        }
         return false;
     }
 
@@ -197,7 +194,7 @@ public class Game extends Pane {
 
     public boolean isMoveValid(Card card, Pile destPile) {
         Card top = destPile.getTopCard();
-        if(destPile.getPileType()==Pile.PileType.TABLEAU) {
+        if (destPile.getPileType() == Pile.PileType.TABLEAU) {
             if (top == null) {
                 if (card.getRank() != 13) {
                     return false;
@@ -208,7 +205,7 @@ public class Game extends Pane {
                 }
             }
         }
-        if(destPile.getPileType()==Pile.PileType.FOUNDATION) {
+        if (destPile.getPileType() == Pile.PileType.FOUNDATION) {
             if (draggedCards.size() > 1) {
                 return false;
             }
@@ -256,7 +253,7 @@ public class Game extends Pane {
         System.out.println(msg);
         MouseUtil.slideToDest(draggedCards, destPile);
         draggedCards.clear();
-        if (isGameWon()){
+        if (isGameWon()) {
             AlertWindow.display("Victory", "OK?");
         }
     }
