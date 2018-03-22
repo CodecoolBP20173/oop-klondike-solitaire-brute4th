@@ -4,33 +4,20 @@ import javafx.animation.Timeline;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Alert;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.BackgroundPosition;
-import javafx.scene.layout.BackgroundRepeat;
-import javafx.scene.layout.BackgroundSize;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import javafx.geometry.Pos;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
 import java.util.*;
 
 public class Game extends Pane {
@@ -304,7 +291,8 @@ public class Game extends Pane {
 
     public Button setRestartButton(Stage primaryStage) {
         Button restartButton = new Button();
-        restartButton = formatRestartButton(restartButton);
+        //restartButton =
+        formatButton(restartButton, "Restart", 657);
         restartButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -316,7 +304,7 @@ public class Game extends Pane {
 
     public Button setUndoButton(Stage primaryStage) {
         Button undoButton = new Button();
-        undoButton = formatUndoButton(undoButton);
+        formatButton(undoButton, "Undo", 617);
         undoButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -345,34 +333,18 @@ public class Game extends Pane {
         return undoButton;
     }
 
-    private Button formatRestartButton(Button restartButton) {
-        restartButton.setText("Restart");
-        Image restartImage = new Image("/button.png");
-        ImageView restartButtonImageView = new ImageView(restartImage);
-        restartButtonImageView.setFitHeight(10);
-        restartButtonImageView.setFitWidth(10);
-        restartButton.setGraphic(restartButtonImageView);
-        restartButton.setPrefWidth(80);
-        restartButton.setPrefHeight(40);
-        restartButton.setLayoutX(0);
-        restartButton.setLayoutY(657);
-        restartButton.setAlignment(Pos.CENTER);
-        return restartButton;
-    }
-
-    private Button formatUndoButton(Button undoButton) {
-        undoButton.setText("Undo");
-        Image restartImage = new Image("/button.png");
-        ImageView restartButtonImageView = new ImageView(restartImage);
-        restartButtonImageView.setFitHeight(10);
-        restartButtonImageView.setFitWidth(10);
-        undoButton.setGraphic(restartButtonImageView);
-        undoButton.setPrefWidth(80);
-        undoButton.setPrefHeight(40);
-        undoButton.setLayoutX(0);
-        undoButton.setLayoutY(697);
-        undoButton.setAlignment(Pos.CENTER);
-        return undoButton;
+    private void formatButton(Button button, String buttonText, int Y){
+        button.setText(buttonText);
+        Image buttonImage = new Image("/button.png");
+        ImageView ButtonImageView = new ImageView(buttonImage);
+        ButtonImageView.setFitHeight(10);
+        ButtonImageView.setFitWidth(10);
+        button.setGraphic(ButtonImageView);
+        button.setPrefWidth(80);
+        button.setPrefHeight(40);
+        button.setLayoutX(0);
+        button.setLayoutY(Y);
+        button.setAlignment(Pos.CENTER);
     }
 
     public ComboBox<String> setComboBox() {
