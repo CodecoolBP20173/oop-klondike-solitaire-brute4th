@@ -6,6 +6,8 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
+import java.sql.Time;
+
 public class Klondike extends Application {
 
     private static final double WINDOW_WIDTH = 1400;
@@ -32,7 +34,15 @@ public class Klondike extends Application {
 
         game.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.W) {
-                System.out.println("Cheat button pressed!");
+                Thread t1 = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        game.cheat();
+                    }
+
+                });
+                t1.start();
+                //System.out.println("Cheat button pressed!");
             }
         });
     }

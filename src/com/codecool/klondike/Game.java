@@ -42,6 +42,41 @@ public class Game extends Pane {
     private static double FOUNDATION_GAP = 0;
     private static double TABLEAU_GAP = 30;
 
+    public void cheat() {
+        List<Card> cardS = new ArrayList();
+        List<Card> kings = new ArrayList();
+        for (Card card:deck) {
+//            if (card.getRank() == 13) {
+//                kings.add(card);
+//            } else {
+                cardS.add(card);
+                if (card.isFaceDown()) {
+                    card.flip();
+                }
+
+                MouseUtil.slideToDest(cardS, foundationPiles.get(card.getSuit() - 1));
+                cardS.clear();
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    //vmi
+                }
+                isGameWon();
+            }
+//        }
+//        for (Card card:kings) {
+//            MouseUtil.slideToDest(kings, foundationPiles.get(card.getSuit() - 1));
+//            cardS.clear();
+//            try {
+//                Thread.sleep(100);
+//            } catch (InterruptedException e) {
+//                //vmi
+//            }
+//        }
+
+        System.out.println("Cheat button!");
+
+    }
 
     private EventHandler<MouseEvent> onMouseClickedHandler = e -> {
         Card card = (Card) e.getSource();
