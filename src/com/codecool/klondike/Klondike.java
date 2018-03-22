@@ -16,6 +16,10 @@ public class Klondike extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        startGame(primaryStage);
+    }
+
+    public static void startGame(Stage primaryStage) {
         Card.loadCardImages("default/");
         Game game = new Game();
         game.setTableBackground(new Image("/table/green.png"));
@@ -23,6 +27,8 @@ public class Klondike extends Application {
         game.getChildren().addAll(game.setComboBox());
         primaryStage.setTitle("Klondike Solitaire");
         primaryStage.setScene(new Scene(game, WINDOW_WIDTH, WINDOW_HEIGHT));
+        game.getChildren().add(game.setRestartButton(primaryStage));
+        game.getChildren().add(game.setUndoButton(primaryStage));
         primaryStage.show();
     }
 

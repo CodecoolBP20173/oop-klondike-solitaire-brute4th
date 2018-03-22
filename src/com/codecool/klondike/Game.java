@@ -4,19 +4,34 @@ import javafx.animation.Timeline;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
+import javafx.geometry.Pos;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
+import java.util.*;
 
 public class Game extends Pane {
 
@@ -37,6 +52,8 @@ public class Game extends Pane {
     private static MediaPlayer player;
     private static Media music;
 
+    private Deque<StepEvent> events = new ArrayDeque<>();
+
     private EventHandler<MouseEvent> onMouseClickedHandler = e -> {
         Card card = (Card) e.getSource();
         if (card.getContainingPile().getPileType() == Pile.PileType.STOCK) {
@@ -44,6 +61,14 @@ public class Game extends Pane {
             card.flip();
             card.setMouseTransparent(false);
             System.out.println("Placed " + card + " to the waste.");
+            StepEvent event = new StepEvent(card, stockPile, StepEvent.EventType.BOTH);
+            events.push(event);
+        }
+        if (card.getContainingPile().getPileType() == Pile.PileType.TABLEAU && card.isFaceDown() && card == card.getContainingPile().getTopCard()) {
+            card.flip();
+            System.out.println(card + " flipped");
+            StepEvent event = new StepEvent(card, card.getContainingPile(), StepEvent.EventType.FLIP);
+            events.push(event);
         }
     };
 
@@ -61,19 +86,31 @@ public class Game extends Pane {
         Pile activePile = card.getContainingPile();
         if (activePile.getPileType() == Pile.PileType.STOCK)
             return;
+        if (activePile.getPileType() == Pile.PileType.DISCARD && activePile.getTopCard() != card) {
+            return;
+        }
+        if (activePile.getPileType() == Pile.PileType.TABLEAU) {
+            if (card.isFaceDown()) {
+                return;
+            }
+        }
         double offsetX = e.getSceneX() - dragStartX;
         double offsetY = e.getSceneY() - dragStartY;
-
         draggedCards.clear();
-        draggedCards.add(card);
-
+        makeCardMove(card, offsetX, offsetY);
         card.getDropShadow().setRadius(20);
         card.getDropShadow().setOffsetX(10);
         card.getDropShadow().setOffsetY(10);
 
-        card.toFront();
-        card.setTranslateX(offsetX);
-        card.setTranslateY(offsetY);
+        if (activePile.getTopCard() != card) {
+            List<Card> tailCards = activePile.getCards();
+            int index = tailCards.indexOf(card);
+            for (int i = index + 1; i < tailCards.size(); i++) {
+                offsetX = e.getSceneX() - dragStartX;
+                offsetY = e.getSceneY() - dragStartY;
+                makeCardMove(tailCards.get(i), offsetX, offsetY);
+            }
+        }
     };
 
     private EventHandler<MouseEvent> onMouseReleasedHandler = e -> {
@@ -94,8 +131,24 @@ public class Game extends Pane {
         }
     };
 
+    public void makeCardMove(Card card, double offsetX, double offsetY) {
+        draggedCards.add(card);
+        card.toFront();
+        card.setTranslateX(offsetX);
+        card.setTranslateY(offsetY);
+    }
+
+    ;
+
+
     public boolean isGameWon() {
-        //TODO
+        int sumOfCards = 0;
+        for (Pile pile: foundationPiles) {
+            sumOfCards += pile.numOfCards();
+            }
+            if (sumOfCards == 51) {
+            return true;
+            }
         return false;
     }
 
@@ -115,7 +168,6 @@ public class Game extends Pane {
     }
 
     public void refillStockFromDiscard() {
-        System.out.println(discardPile.numOfCards());
         List<Card> cards = discardPile.getCards();
         Collections.reverse(cards);
         for (Card card : cards) {
@@ -139,6 +191,9 @@ public class Game extends Pane {
             }
         }
         if (destPile.getPileType() == Pile.PileType.FOUNDATION) {
+            if (draggedCards.size() > 1) {
+                return false;
+            }
             if (top == null) {
                 if (card.getRank() != 1) {
                     return false;
@@ -172,6 +227,8 @@ public class Game extends Pane {
 
     private void handleValidMove(Card card, Pile destPile) {
         String msg = null;
+        StepEvent event = new StepEvent(card, card.getContainingPile(), StepEvent.EventType.MOVE);
+        events.push(event);
         if (destPile.isEmpty()) {
             if (destPile.getPileType().equals(Pile.PileType.FOUNDATION))
                 msg = String.format("Placed %s to the foundation.", card);
@@ -183,6 +240,9 @@ public class Game extends Pane {
         System.out.println(msg);
         MouseUtil.slideToDest(draggedCards, destPile);
         draggedCards.clear();
+        if (isGameWon()){
+            AlertWindow.display("Victory", "OK?");
+        }
     }
 
     private void initPiles() {
@@ -240,6 +300,79 @@ public class Game extends Pane {
         setBackground(new Background(new BackgroundImage(tableBackground,
                 BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT,
                 BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
+    }
+
+    public Button setRestartButton(Stage primaryStage) {
+        Button restartButton = new Button();
+        restartButton = formatRestartButton(restartButton);
+        restartButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Klondike.startGame(primaryStage);
+            }
+        });
+        return restartButton;
+    }
+
+    public Button setUndoButton(Stage primaryStage) {
+        Button undoButton = new Button();
+        undoButton = formatUndoButton(undoButton);
+        undoButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                StepEvent undoEvent = null;
+                try {
+                    undoEvent = events.pop();
+                } catch (Exception e) {
+                    return;
+                }
+                Card card = undoEvent.card;
+                Pile prevPile = undoEvent.previousPile;
+                switch (undoEvent.et) {
+                    case MOVE:
+                        card.moveToPile(prevPile);
+                        break;
+                    case FLIP:
+                        card.flip();
+                        break;
+                    case BOTH:
+                        card.moveToPile(prevPile);
+                        card.flip();
+                        break;
+                }
+            }
+        });
+        return undoButton;
+    }
+
+    private Button formatRestartButton(Button restartButton) {
+        restartButton.setText("Restart");
+        Image restartImage = new Image("/button.png");
+        ImageView restartButtonImageView = new ImageView(restartImage);
+        restartButtonImageView.setFitHeight(10);
+        restartButtonImageView.setFitWidth(10);
+        restartButton.setGraphic(restartButtonImageView);
+        restartButton.setPrefWidth(80);
+        restartButton.setPrefHeight(40);
+        restartButton.setLayoutX(0);
+        restartButton.setLayoutY(657);
+        restartButton.setAlignment(Pos.CENTER);
+        return restartButton;
+    }
+
+    private Button formatUndoButton(Button undoButton) {
+        undoButton.setText("Undo");
+        Image restartImage = new Image("/button.png");
+        ImageView restartButtonImageView = new ImageView(restartImage);
+        restartButtonImageView.setFitHeight(10);
+        restartButtonImageView.setFitWidth(10);
+        undoButton.setGraphic(restartButtonImageView);
+        undoButton.setPrefWidth(80);
+        undoButton.setPrefHeight(40);
+        undoButton.setLayoutX(0);
+        undoButton.setLayoutY(697);
+        undoButton.setAlignment(Pos.CENTER);
+        return undoButton;
     }
 
     public ComboBox<String> setComboBox() {
