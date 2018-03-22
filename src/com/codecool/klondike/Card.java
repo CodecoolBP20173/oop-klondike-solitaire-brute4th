@@ -5,13 +5,16 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Card extends ImageView {
 
     private int suit;
     private int rank;
-    public boolean faceDown;
+    private boolean faceDown;
 
     public Image backFace;
     public Image frontFace;
@@ -19,7 +22,7 @@ public class Card extends ImageView {
     private DropShadow dropShadow;
 
     static Image cardBackImage;
-    public static final Map<String, Image> cardFaceImages = new HashMap<>();
+    private static final Map<String, Image> cardFaceImages = new HashMap<>();
     public static final int WIDTH = 150;
     public static final int HEIGHT = 215;
 
@@ -126,8 +129,13 @@ public class Card extends ImageView {
                 String imageFileName = "card_images/" + themeUrl + cardName + ".png";
                 cardFaceImages.put(cardId, new Image(imageFileName));
             }
-            System.out.println(cardBackImage);
         }
+    }
+
+    public void changeCardTheme(){
+        backFace = cardBackImage;
+        frontFace = cardFaceImages.get(getShortName());
+        setImage(faceDown ? backFace : frontFace);
     }
 
 }

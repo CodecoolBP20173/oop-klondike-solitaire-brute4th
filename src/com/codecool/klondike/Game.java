@@ -1,31 +1,18 @@
 package com.codecool.klondike;
 
 import javafx.animation.Timeline;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
-import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.BackgroundPosition;
-import javafx.scene.layout.BackgroundRepeat;
-import javafx.scene.layout.BackgroundSize;
-import javafx.scene.layout.Pane;
-import javafx.scene.control.Control.*;
-import javafx.scene.control.ComboBox;
-import javafx.beans.value.*;
-import javafx.scene.control.*;
-import java.io.File;
-import java.net.*;
-import javafx.util.Duration;
-
-import javafx.scene.media.AudioClip;
-import javafx.scene.media.*;
+import javafx.scene.layout.*;
+import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -266,6 +253,8 @@ public class Game extends Pane {
                 if (themes.getValue() == "Green") {
                     setTableBackground(new Image("/table/green.png"));
                     musicPlayer("ambient.mp3");
+                    Card.loadCardImages("default/");
+                    changeTheme();
                 }
                 if (themes.getValue() == "Red") {
                     setTableBackground(new Image("/table/red.jpg"));
@@ -289,9 +278,7 @@ public class Game extends Pane {
     public void changeTheme(){
         for (int i = 0; i < deck.size(); i++) {
             Card currentCard = deck.get(i);
-            currentCard.backFace = Card.cardBackImage;
-            currentCard.frontFace = Card.cardFaceImages.get(currentCard.getShortName());
-            currentCard.setImage(currentCard.faceDown ? currentCard.backFace : currentCard.frontFace);
+            currentCard.changeCardTheme();
         }
     }
 }
