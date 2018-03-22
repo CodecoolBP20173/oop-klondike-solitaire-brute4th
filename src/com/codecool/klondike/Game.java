@@ -160,7 +160,13 @@ public class Game extends Pane {
 
 
     public boolean isGameWon() {
-        //TODO
+        int sumOfCards = 0;
+        for (Pile pile: foundationPiles) {
+            sumOfCards += pile.numOfCards();
+            }
+            if (sumOfCards == 51) {
+            return true;
+            }
         return false;
     }
 
@@ -180,7 +186,6 @@ public class Game extends Pane {
     }
 
     public void refillStockFromDiscard() {
-        System.out.println(discardPile.numOfCards());
         List<Card> cards = discardPile.getCards();
         Collections.reverse(cards);
         for (Card card : cards) {
@@ -204,6 +209,9 @@ public class Game extends Pane {
             }
         }
         if(destPile.getPileType()==Pile.PileType.FOUNDATION) {
+            if (draggedCards.size() > 1) {
+                return false;
+            }
             if (top == null) {
                 if (card.getRank() != 1) {
                     return false;
@@ -248,6 +256,9 @@ public class Game extends Pane {
         System.out.println(msg);
         MouseUtil.slideToDest(draggedCards, destPile);
         draggedCards.clear();
+        if (isGameWon()){
+            AlertWindow.display("Victory", "OK?");
+        }
     }
 
     private void initPiles() {
