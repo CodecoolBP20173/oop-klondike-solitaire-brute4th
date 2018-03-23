@@ -4,7 +4,6 @@ import javafx.animation.Timeline;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -12,17 +11,14 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
-import javafx.geometry.Pos;
 
-
-import java.util.*;
 import java.io.File;
+import java.util.*;
 
 
 public class Game extends Pane {
@@ -180,6 +176,7 @@ public class Game extends Pane {
         initPiles();
         dealCards();
         musicPlayer("resources/audio/ambient.mp3");
+        AlertWindow.setVictoryImage(false);
     }
 
     public void addMouseEventHandlers(Card card) {
